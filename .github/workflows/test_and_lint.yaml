@@ -1,0 +1,25 @@
+on: pull_request
+
+jobs:
+  lint_and_test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.10"
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip poetry
+          poetry install
+          poetry config virtualenvs.create false
+      - name: Lint, format and static type check
+        run: |
+          poetry run ruff check
+          poetry run ruff format --check
+          poetry run mypy
+      - name: Test
+        run: |
+          poetry run pytest
+        env:
+          ENV: test
